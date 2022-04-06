@@ -5,11 +5,11 @@ import { regMobileCN } from "src/utils/regex.util";
 export class LoginDTO {
   @ApiProperty({
     description: '手机号，唯一',
-    example: '13049153466'
+    example: '13580175404'
   })
   @Matches(regMobileCN, { message: '请输入正确手机号' })
   @IsNotEmpty({ message: '请输入手机号' })
-  readonly mobile: string;
+  readonly telephone: string;
 
   @ApiProperty({
     description: '用户密码',

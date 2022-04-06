@@ -1,39 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { encryptPassword } from 'src/utils/cryptogram.util';
-import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
+import { BaseService } from '../base/base.service';
+import { Base } from '../base/entities/base.entity';
 import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService,private jwtService: JwtService){}
-  // local策略可能才需要使用，先注释
-  // async validateUser(mobile: string, password: string): Promise<any> {
-  //   const user = await this.userService.findByMobile(mobile)
-  //   if (!user) {
-  //     throw new NotFoundException('用户不存在')
-  //   }
-  //   const { password: dbPassword, salt } = user
-  //   const currentHashPassword = encryptPassword(password, salt)
-  //   if (currentHashPassword !== dbPassword) {
-  //     throw new NotFoundException('密码错误')
-  //   }
+  constructor(private baseService: BaseService, private jwtService: JwtService) { }
+  
+  async validateUser(telephone: string, password: string): Promise<any> {
+    const user = await this.baseService.findByMobile({telephone})
+    if (!user) {
+      throw new NotFoundException('用户不存在')
+    }
+    const { password: dbPassword, salt } = user
+    const currentHashPassword = encryptPassword(password, salt)
+    
+    if (currentHashPassword !== dbPassword) {
+      throw new UnauthorizedException('用户名或密码错误');
+    }
 
-  //   return user
-  // }
+    return user
+  }
 
-  async login(user:any) {
-    const payload = { 
-      id: user.id,
-      nickname: user.nickname,
-      mobile: user.mobile,
+  async login(user: any) {
+    const { telephone, password } = user;
+    const payload = {
+      telephone,
+      password
     };
 
     return {
       token: this.jwtService.sign(payload),
       expiresIn: jwtConstants.expiresIn,
-      user: await this.userService.findByMobile({mobile:user.mobile})
+      user: await this.baseService.findByMobile({ telephone })
     };
   }
 }
