@@ -7,6 +7,7 @@ import { Base } from './entities/base.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Base])],
   providers: [BaseService],
-  controllers: [BaseController]
+  controllers: [BaseController],
+  exports:[BaseService]
 })
 export class BaseModule { }

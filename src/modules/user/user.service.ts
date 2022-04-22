@@ -69,16 +69,6 @@ export class UserService {
     }
   }
 
-  async findByMobile(findByMobileDTO: FindByMobileDTO) {
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.salt')
-      .addSelect('user.password')
-      .where('user.mobile = :mobile', findByMobileDTO)
-      .getOne();
-    return user;
-  }
-
   async edit(id: number, userEditDTO: UserEditDTO): Promise<any> {
     let userToEdit = await this.userRepository
       .createQueryBuilder('user')

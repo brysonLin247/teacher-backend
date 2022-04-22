@@ -8,7 +8,6 @@ import {
   VersionColumn,
   BeforeInsert,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 @Entity('user')
 export class User {
   // 主键id

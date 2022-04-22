@@ -5,9 +5,14 @@ import { ListDTO } from './dto/list.dto';
 import { BaseCreateDTO } from './dto/base-create.dto';
 import { BaseEditDTO } from './dto/base-edit.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Roles } from '../roles/roles.decorator';
+import { Role } from '../roles/roles.interface';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Controller('base')
 @ApiBearerAuth()
+@Roles(Role.Admin)
+@UseGuards(RolesGuard)
 export class BaseController {
   constructor(private baseService: BaseService) { }
 

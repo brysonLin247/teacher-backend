@@ -35,4 +35,18 @@ export class BaseCreateDTO {
   @ApiProperty({ description: '任职状态' })
   @IsNotEmpty({ message: '请输入任职状态' })
   readonly status: string;    // 任职状态
+
+  @ApiProperty({
+    description: '用户密码',
+    example: '123456',
+  })
+  // @IsNotEmpty({ message: '请输入密码' })
+  readonly password?: string;
+
+  // @ApiProperty({
+  //   description: '是否为管理员',
+  //   example: 1
+  // })
+
+  // readonly is_admin: number;
 }

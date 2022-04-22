@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Base } from './entities/base.entity';
 import { IdDTO } from './dto/id.dto';
 import { ListDTO } from './dto/list.dto';
 import { BaseCreateDTO } from './dto/base-create.dto';
 import { BaseEditDTO } from './dto/base-edit.dto';
 import { getPagination } from 'src/utils';
+import { encryptPassword, makeSalt } from 'src/utils/cryptogram.util';
+import { FindByTelDTO } from './dto/findByTel.dto';
 
 @Injectable()
 export class BaseService {
@@ -15,6 +17,7 @@ export class BaseService {
     private readonly baseRepository: Repository<Base>,
   ) {
   }
+
 
   // 获取列表
   async getMore(listDTO: ListDTO) {
@@ -56,7 +59,7 @@ export class BaseService {
       .getOne();
 
     if (!baseDetail) {
-      throw new NotFoundException('找不到文章')
+      throw new NotFoundException('找不到用户')
     }
 
     return {
@@ -66,34 +69,55 @@ export class BaseService {
 
   // 创建教师数据
   async create(baseCreateDTO: BaseCreateDTO): Promise<Base> {
-    const base = this.baseRepository.create();
-    base.name = baseCreateDTO.name;
-    base.sex = baseCreateDTO.sex;
-    base.birth = baseCreateDTO.birth;
-    base.location = baseCreateDTO.location;
-    base.telephone = baseCreateDTO.telephone;
-    base.introduce = baseCreateDTO.introduce;
-    base.graduation = baseCreateDTO.graduation;
-    base.education = baseCreateDTO.education;
-    base.apartment = baseCreateDTO.apartment;
-    base.title = baseCreateDTO.title;
-    base.status = baseCreateDTO.status;
-    return await this.baseRepository.save(base);
+    const {name,sex,birth,location,telephone,introduce,graduation,education,apartment,title,status,password = '123'} = baseCreateDTO;
+    const hasUser = await this.baseRepository.findOne({telephone});
+    if (hasUser){
+      throw new NotFoundException('用户已存在！')
+    }
+    const salt = makeSalt(); // 制作密码盐
+    const hashPassword = encryptPassword(password, salt);
+    const newUser = this.baseRepository.create();
+    newUser.name = name;
+    newUser.sex = sex;
+    newUser.birth = birth;
+    newUser.location = location;
+    newUser.telephone = telephone;
+    newUser.introduce = introduce;
+    newUser.graduation = graduation;
+    newUser.education = education;
+    newUser.apartment = apartment;
+    newUser.title = title;
+    newUser.status = status;
+    newUser.password = hashPassword;
+    newUser.salt = salt;
+    newUser.is_admin = 0;
+    return await this.baseRepository.save(newUser);
+  }
+
+  async findByMobile(findByTelDTO: FindByTelDTO) {
+    const user = await this.baseRepository
+      .createQueryBuilder('base')
+      .addSelect('base.salt')
+      .addSelect('base.password')
+      .where('base.telephone = :telephone', findByTelDTO)
+      .getOne();
+    return user;
   }
 
   async edit(idDTO: IdDTO, baseEditDTO: BaseEditDTO): Promise<Base> {
+    const {name,sex,birth,location,telephone,introduce,graduation,education,apartment,title,status} = baseEditDTO;
     let baseToEdit = await this.baseRepository.findOne(idDTO);
-    baseToEdit.name = baseEditDTO.name;
-    baseToEdit.sex = baseEditDTO.sex;
-    baseToEdit.birth = baseEditDTO.birth;
-    baseToEdit.location = baseEditDTO.location;
-    baseToEdit.telephone = baseEditDTO.telephone;
-    baseToEdit.introduce = baseEditDTO.introduce;
-    baseToEdit.graduation = baseEditDTO.graduation;
-    baseToEdit.education = baseEditDTO.education;
-    baseToEdit.apartment = baseEditDTO.apartment;
-    baseToEdit.title = baseEditDTO.title;
-    baseToEdit.status = baseEditDTO.status;
+    baseToEdit.name = name;
+    baseToEdit.sex = sex;
+    baseToEdit.birth = birth;
+    baseToEdit.location = location;
+    baseToEdit.telephone = telephone;
+    baseToEdit.introduce = introduce;
+    baseToEdit.graduation = graduation;
+    baseToEdit.education = education;
+    baseToEdit.apartment = apartment;
+    baseToEdit.title = title;
+    baseToEdit.status = status;
 
     const result = await this.baseRepository.save(baseToEdit);
     return result;
@@ -111,5 +135,11 @@ export class BaseService {
     bases.map((base) => base.isDelete = true);
     const result = await this.baseRepository.save(bases);
     return result
+  }
+
+  async checkAdmin(id: number) {
+    return await this.baseRepository.findOne({
+      where: { id, is_admin: 1 },
+    });
   }
 }

@@ -4,10 +4,14 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './core/filters/http-execption.filter';
 import { TransformInterceptor } from './core/interceptor/transform.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { json, urlencoded } from 'express';
 // import * as csurf from 'csurf';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useStaticAssets(join(__dirname, '..', 'upload_dist'));
   // 设置全局路由前缀
   app.setGlobalPrefix('api');
   // 注册全局管道
@@ -18,6 +22,11 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
  // CSRF保护
   // app.use(csurf());
+  app.enableCors({credentials:true,origin:'http://localhost:8000'});
+  
+  
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
   
   const config = new DocumentBuilder()
     .setTitle('师资管理系统')

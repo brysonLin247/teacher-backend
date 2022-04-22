@@ -1,11 +1,11 @@
-// src/modules/article/entity/article.entity.ts
-
+import { Research } from 'src/modules/research/entities/research.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('base')
@@ -72,9 +72,6 @@ export class Base {
   @Column('text')
   status: string;
 
-  @Column('int', { default: 0 })
-  is_admin?: number;
-
   // 加密后的密码
   @Column('text', { select: false })
   password: string;
@@ -82,4 +79,10 @@ export class Base {
   // 加密盐
   @Column('text', { select: false })
   salt: string;
+
+  @OneToMany(() => Research, (research) => research.base, { cascade: true })
+  researches: Research[];
+
+  @Column('int', { default: 0 })
+  is_admin?: number; 
 }

@@ -17,41 +17,35 @@ export class UserController {
     private userService: UserService
   ) {}
 
-  @SkipJwtAuth()
-  @Post('register')
-  @ApiOperation({summary:'注册账户'})
-  async register(
-    @Body() registerDTO: RegisterDTO
-  ): Promise<any> {
-    return this.userService.register(registerDTO)
-  }
+  // @SkipJwtAuth()
+  // @Post('register')
+  // @ApiOperation({summary:'注册账户'})
+  // async register(
+  //   @Body() registerDTO: RegisterDTO
+  // ): Promise<any> {
+  //   return this.userService.register(registerDTO)
+  // }
 
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
-  @Get('getAll')
-  @ApiOperation({summary:'显示所有用户'})
-  async getMore(@Query() listDTO: ListDTO) {
-    return await this.userService.getMore(listDTO);
-  }
+  // @Roles(Role.Admin)
+  // @UseGuards(RolesGuard)
+  // @Get('getAll')
+  // @ApiOperation({summary:'显示所有用户'})
+  // async getMore(@Query() listDTO: ListDTO) {
+  //   return await this.userService.getMore(listDTO);
+  // }
 
-  @Get('findByMobile')
-  @ApiOperation({summary:'通过手机号查找用户'})
-  async findMyMobile(@Query() findByMobileDTO:FindByMobileDTO) {
-    return await this.userService.findByMobile(findByMobileDTO);
-  }
+  // @Patch(':id')
+  // @ApiOperation({summary:'修改用户'})
+  // async edit(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() userEditDTO: UserEditDTO,
+  // ) {
+  //   return this.userService.edit(id, userEditDTO);
+  // }
 
-  @Patch(':id')
-  @ApiOperation({summary:'修改用户'})
-  async edit(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() userEditDTO: UserEditDTO,
-  ) {
-    return this.userService.edit(id, userEditDTO);
-  }
-
-  @Delete(':id')
-  @ApiOperation({summary:'删除用户'})
-  async delete(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.delete(id);
-  }
+  // @Delete(':id')
+  // @ApiOperation({summary:'删除用户'})
+  // async delete(@Param('id', ParseIntPipe) id: number) {
+  //   return this.userService.delete(id);
+  // }
 }
