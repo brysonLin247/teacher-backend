@@ -11,11 +11,11 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Controller('base')
 @ApiBearerAuth()
+@Roles(Role.Admin)
+@UseGuards(RolesGuard)
 export class BaseController {
   constructor(private baseService: BaseService) { }
 
-  @Roles(Role.Admin)
-  @UseGuards(RolesGuard)
   @Get()
   @ApiOperation({ summary: '显示教师数据' })
   getMore(@Query() listDTO: ListDTO) {

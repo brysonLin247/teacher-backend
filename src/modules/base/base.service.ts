@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Base } from './entities/base.entity';
 import { IdDTO } from './dto/id.dto';
 import { ListDTO } from './dto/list.dto';
@@ -59,7 +59,7 @@ export class BaseService {
       .getOne();
 
     if (!baseDetail) {
-      throw new NotFoundException('找不到文章')
+      throw new NotFoundException('找不到用户')
     }
 
     return {
@@ -105,18 +105,19 @@ export class BaseService {
   }
 
   async edit(idDTO: IdDTO, baseEditDTO: BaseEditDTO): Promise<Base> {
+    const {name,sex,birth,location,telephone,introduce,graduation,education,apartment,title,status} = baseEditDTO;
     let baseToEdit = await this.baseRepository.findOne(idDTO);
-    baseToEdit.name = baseEditDTO.name;
-    baseToEdit.sex = baseEditDTO.sex;
-    baseToEdit.birth = baseEditDTO.birth;
-    baseToEdit.location = baseEditDTO.location;
-    baseToEdit.telephone = baseEditDTO.telephone;
-    baseToEdit.introduce = baseEditDTO.introduce;
-    baseToEdit.graduation = baseEditDTO.graduation;
-    baseToEdit.education = baseEditDTO.education;
-    baseToEdit.apartment = baseEditDTO.apartment;
-    baseToEdit.title = baseEditDTO.title;
-    baseToEdit.status = baseEditDTO.status;
+    baseToEdit.name = name;
+    baseToEdit.sex = sex;
+    baseToEdit.birth = birth;
+    baseToEdit.location = location;
+    baseToEdit.telephone = telephone;
+    baseToEdit.introduce = introduce;
+    baseToEdit.graduation = graduation;
+    baseToEdit.education = education;
+    baseToEdit.apartment = apartment;
+    baseToEdit.title = title;
+    baseToEdit.status = status;
 
     const result = await this.baseRepository.save(baseToEdit);
     return result;

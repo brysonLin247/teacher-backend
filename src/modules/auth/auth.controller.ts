@@ -1,5 +1,5 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SkipJwtAuth } from './constants';
 import { LoginDTO } from './dto/login.dto';
@@ -14,6 +14,7 @@ export class AuthController {
   @SkipJwtAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiOperation({ summary: '登录' })
   async login(@Body() loginDTO:LoginDTO){
     return await this.authService.login(loginDTO);
   }

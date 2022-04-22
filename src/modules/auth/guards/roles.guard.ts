@@ -3,7 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { BaseService } from 'src/modules/base/base.service';
 import { ROLES_KEY } from 'src/modules/roles/roles.decorator';
 import { Role } from 'src/modules/roles/roles.interface';
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector, private baseService: BaseService) { }
@@ -16,8 +15,9 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const { user } = context.switchToHttp().getRequest();
-    const adminUser = await this.baseService.checkAdmin(user.id);
+    const request = context.switchToHttp().getRequest();
+    const { user } = request;
+    const adminUser = await this.baseService.checkAdmin(user?.id);
     return !!adminUser;
   }
 }

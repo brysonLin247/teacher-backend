@@ -40,8 +40,8 @@ export class BaseCreateDTO {
     description: '用户密码',
     example: '123456',
   })
-  @IsNotEmpty({ message: '请输入密码' })
-  readonly password: string;
+  // @IsNotEmpty({ message: '请输入密码' })
+  readonly password?: string;
 
   // @ApiProperty({
   //   description: '是否为管理员',

@@ -15,15 +15,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const existUser = this.baseService.findByMobile({telephone: payload.telephone});
+    const existUser = await this.baseService.findByMobile({telephone: payload.telephone});
     if (!existUser) {
       throw new UnauthorizedException();
     }
 
     return { 
-      id: payload.id,
-      name: payload.name,
-      telephone: payload.telephone,
+      id: existUser.id,
+      name: existUser.name,
+      telephone: existUser.telephone,
+      is_admin: existUser.is_admin
     };
   }
 }
